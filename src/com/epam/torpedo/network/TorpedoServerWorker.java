@@ -58,7 +58,6 @@ public class TorpedoServerWorker implements Runnable {
 			initStreams();
 			printWelcomeMessage();
 
-			boolean canAttack = false;
 
 			while (!isStopped) {
 				Command command = null;

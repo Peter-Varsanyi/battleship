@@ -45,8 +45,8 @@ public class Board {
 		Random randomGenerator = new Random();
 		do {
 
-			int x = randomGenerator.nextInt(maxX - 4);
-			int y = randomGenerator.nextInt(maxY - 4);
+			int x = randomGenerator.nextInt(maxX);
+			int y = randomGenerator.nextInt(maxY);
 
 			coordinates = createNewShipCoordinatesFromDetail(shipDetail);
 

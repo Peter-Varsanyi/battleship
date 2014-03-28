@@ -10,9 +10,9 @@ public class Program {
 //		ShipGuesser shipguesser = new ShipGuesser(30, 30);
 //		shipguesser.guessShip();
 		
-		new Thread(new TorpedoServer(6666,5)).start();
+		new Thread(new TorpedoServer(6666,4)).start();
 //		Thread.sleep(10);
-		new Thread(new TorpedoClient("localhost", 6666)).start();
+		new Thread(new TorpedoClient("10.0.9.179", 6666)).start();
 	}
 
 }
