@@ -17,7 +17,7 @@ public class ArtificalIntelligence {
 	private int boardY;
 
 	String type;
-	Integer[][] alreadyUsedPoints;
+	int[][] alreadyUsedPoints;
 	private Point lastHit;
 
 	private int[][] matrix;
@@ -26,12 +26,12 @@ public class ArtificalIntelligence {
 		this.board = board;
 		boardX = board.getMaxx();
 		boardY = board.getMaxY();
-		alreadyUsedPoints = new Integer[boardX][boardY];
+		alreadyUsedPoints = new int[boardX][boardY];
 		this.type = type;
 
 		ShipPossibilityMatrix matrixGenerator;
-			matrixGenerator = new ShipPossibilityMatrix();
-			matrix = matrixGenerator.getMatrix();
+		matrixGenerator = new ShipPossibilityMatrix();
+		matrix = matrixGenerator.getMatrix();
 
 	}
 
@@ -68,21 +68,40 @@ public class ArtificalIntelligence {
 	}
 
 	private Point getBestHitBasedOnMatrix(Point lastHit) {
-		int x = lastHit.x;
-		int y = lastHit.y;
+		if(lastHit == null) return new Point(0,0);
+		int topleftx = lastHit.x - 1;
+		int toplefty = lastHit.y - 1;
 
-		int maxx = 0;
-		int maxy = 0;
-		int maxValue = matrix[0][0];
-		
-		
+		int maxValue = 0;
+		int bestX = 0;
+		int bestY = 0;
+
+		System.out.println(lastHit);
+
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-					//board.
+				// System.out.println("Coords: " + (lastx - i - 1) + " y: " + (lasty - j - 1));
+				int x = topleftx + i;
+				int y = toplefty + i;
+//				System.out.println("aa " + x + " y" + y);
+				if (isValidSpotOnTable(x, y) && alreadyUsedPoints[x][y] == 0 && matrix[i][j] > maxValue) {
+					maxValue = matrix[i][j];
+					bestX = x;
+					bestY = y;
 				}
 			}
 		}
-		return new Point(maxx, maxy);
+
+		return new Point(bestX, bestY);
+	}
+
+	/**
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private boolean isValidSpotOnTable(int x, int y) {
+		return x > 0 && y > 0 && x < this.boardX && y < this.boardY;
 	}
 
 	public Command getAttackingCommand() {
@@ -91,18 +110,29 @@ public class ArtificalIntelligence {
 
 		Random rng = new Random();
 
-		if (lastHit != null) {
-			Point nextHit = getBestHitBasedOnMatrix(lastHit);
-			System.out.println("jaaa");
+		Point nextHit = getBestHitBasedOnMatrix(lastHit);
+		if (nextHit.equals(new Point(0, 0))) {
+			do {
+				x = rng.nextInt(boardX);
+				y = rng.nextInt(boardY);
+			} while (alreadyUsedPoints[x][y] != 0);
+			nextHit = new Point(x, y);
 		}
 
-		do {
-			x = rng.nextInt(boardX);
-			y = rng.nextInt(boardY);
-		} while (alreadyUsedPoints[x][y] != null);
-		alreadyUsedPoints[x][y] = 1;
-		lastHit = new Point(x, y);
-		return new AttackCommand(x, y);
+		alreadyUsedPoints[nextHit.x][nextHit.y] = 1;
+		lastHit = nextHit;
+		printShotTable();
+		return new AttackCommand(nextHit.x, nextHit.y);
+	}
+
+	private void printShotTable() {
+		for(int i  = 0; i < boardX ; i++) {
+			for(int j = 0; j < boardY; j++) {
+				System.out.print(alreadyUsedPoints[i][j]);
+			}
+			System.out.println();
+		}
+		System.out.println();
 	}
 
 }

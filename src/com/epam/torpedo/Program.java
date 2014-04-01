@@ -12,9 +12,9 @@ public class Program {
 		// ShipGuesser shipguesser = new ShipGuesser(30, 30);
 		// shipguesser.guessShip();
 
-		 new Thread(new TorpedoServer(6666, 30)).start();
+		 new Thread(new TorpedoServer(6666, 20, 20)).start();
 		// // Thread.sleep(10);
-		 new Thread(new TorpedoClient("10.0.9.179", 6666)).start();
+		 new Thread(new TorpedoClient("localhost", 6666)).start();
 
 		ShipPossibilityMatrix matrix = new ShipPossibilityMatrix();
 		int[][] matrix2 = matrix.getMatrix();

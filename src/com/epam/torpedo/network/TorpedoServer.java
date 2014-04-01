@@ -10,14 +10,16 @@ public class TorpedoServer implements Runnable {
 	private int port;
 
 	private boolean isStopped = false;
-	private int boardsize;
+	private int boardSizeX;
+	private int boardSizeY;
 
 	public void stop() {
 		isStopped = true;
 	}
 
-	public TorpedoServer(int port, int boardsize) {
-		this.boardsize = boardsize;
+	public TorpedoServer(int port, int boardSizeX, int boardSizeY) {
+		this.boardSizeX = boardSizeX;
+		this.boardSizeY = boardSizeY;
 		this.port = port;
 	}
 
@@ -37,7 +39,7 @@ public class TorpedoServer implements Runnable {
 			Socket clientSocket = null;
 			try {
 				clientSocket = listener.accept();
-				new Thread(new TorpedoServerWorker(clientSocket, boardsize)).start();
+				new Thread(new TorpedoServerWorker(clientSocket, boardSizeX, boardSizeY)).start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -15,26 +15,28 @@ public class TorpedoServerWorker implements Runnable {
 
 	private boolean isStopped = false;
 	private Socket socket;
-	private int boardSize;
 	private BufferedReader in;
 	private OutputStream out;
 	private ArtificalIntelligence ai;
+	private int boardSizeY;
+	private int boardSizeX;
 
-	public TorpedoServerWorker(Socket clientSocket, int boardSize) {
+	public TorpedoServerWorker(Socket clientSocket, int boardSize1, int boardSize2) {
 		this.socket = clientSocket;
-		this.boardSize = boardSize;
+		this.boardSizeX = boardSize1;
+		this.boardSizeY = boardSize2;
 
-		Board board = new Board(boardSize, boardSize);
+		Board board = new Board(boardSize1, boardSize2);
+
 		try {
 			ai = new ArtificalIntelligence(board, "server");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public void printWelcomeMessage() throws IOException {
-		out.write(String.format("INIT %d,%d\n", boardSize, boardSize).getBytes());
+		out.write(String.format("INIT %d,%d\n", boardSizeX, boardSizeY).getBytes());
 	}
 
 	public void initStreams() throws IOException {
@@ -48,11 +50,6 @@ public class TorpedoServerWorker implements Runnable {
 		System.out.println("[server] " + Thread.currentThread().getId() + " wrote: " + result);
 		out.write((result + "\n").getBytes());
 		out.flush();
-		if (data instanceof GameoverCommand) {
-			in.close();
-			out.close();
-			isStopped = true;
-		}
 	}
 
 	@Override
@@ -73,45 +70,27 @@ public class TorpedoServerWorker implements Runnable {
 					isStopped = true;
 				}
 
-				if (command != null && command instanceof GameoverCommand == false) {
+				if (command != null) {
 					returnResponse(command);
 					attackEnemy();
 				}
-				// command = new GameoverCommand();
-
-				// if (canAttack) {
-				// command = ai.getAttackingCommand();
-				// canAttack = false;
-				// } else {
-				// String line = in.readLine();
-				// if (!ai.isGameOver()) {
-				// command = ai.handleCommand(line);
-				// } else {
-				// command = new GameoverCommand();
-				// }
-				// canAttack = true;
-				// }
-
-				// Thread.sleep(500);
-
-				// System.out.println("Command received: " + line);
 			}
-
+			closeStreams();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	/**
-	 * @throws IOException
-	 */
+	private void closeStreams() throws IOException {
+		in.close();
+		out.close();
+		socket.close();
+	}
+
 	private void attackEnemy() throws IOException {
 		Command command = ai.getAttackingCommand();
 		returnResponse(command);
 	}
-
-	// TODO Auto-generated method stub
 
 }

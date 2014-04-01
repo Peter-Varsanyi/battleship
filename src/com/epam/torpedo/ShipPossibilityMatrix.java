@@ -11,6 +11,7 @@ public class ShipPossibilityMatrix {
 	private void generateMatrix(int[][] matrix1, int x, int y) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
+				System.out.println("Check x:" + i + " y:" + j);
 				if (matrix1[x + i][y + j] == 1) {
 					possibilityMatrix[i + 1][j + 1]++;
 				}
@@ -59,7 +60,6 @@ public class ShipPossibilityMatrix {
 			lineCount++;
 		}
 		br.close();
-		printMatrix();
 	}
 
 	public int[][] getMatrix() {
