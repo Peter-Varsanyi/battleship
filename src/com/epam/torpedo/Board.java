@@ -78,6 +78,7 @@ public class Board {
 	private boolean isShipPlaceable(List<Point> coordinates) {
 		boolean validPosition = true;
 		for (Point p : coordinates) {
+			if (p.getX()>= maxX || p.getY() >= maxY) return false;
 			if (board[p.getX()][p.getY()] > 0) {
 				validPosition = false;
 			}

@@ -25,7 +25,12 @@ public class TorpedoServerWorker implements Runnable {
 		this.boardSize = boardSize;
 
 		Board board = new Board(boardSize, boardSize);
-		ai = new ArtificalIntelligence(board, "server");
+		try {
+			ai = new ArtificalIntelligence(board, "server");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void printWelcomeMessage() throws IOException {
@@ -40,7 +45,7 @@ public class TorpedoServerWorker implements Runnable {
 
 	public void returnResponse(Command data) throws IOException {
 		String result = data.getResult();
-		System.out.println("[server] "+Thread.currentThread().getId()+" wrote: " + result);
+		System.out.println("[server] " + Thread.currentThread().getId() + " wrote: " + result);
 		out.write((result + "\n").getBytes());
 		out.flush();
 		if (data instanceof GameoverCommand) {
@@ -58,7 +63,6 @@ public class TorpedoServerWorker implements Runnable {
 			initStreams();
 			printWelcomeMessage();
 
-
 			while (!isStopped) {
 				Command command = null;
 				String line = in.readLine();
@@ -68,12 +72,12 @@ public class TorpedoServerWorker implements Runnable {
 					returnResponse(new GameoverCommand());
 					isStopped = true;
 				}
-				
+
 				if (command != null && command instanceof GameoverCommand == false) {
 					returnResponse(command);
 					attackEnemy();
 				}
-//					command = new GameoverCommand();
+				// command = new GameoverCommand();
 
 				// if (canAttack) {
 				// command = ai.getAttackingCommand();
@@ -88,7 +92,7 @@ public class TorpedoServerWorker implements Runnable {
 				// canAttack = true;
 				// }
 
-//				Thread.sleep(500);
+				// Thread.sleep(500);
 
 				// System.out.println("Command received: " + line);
 			}

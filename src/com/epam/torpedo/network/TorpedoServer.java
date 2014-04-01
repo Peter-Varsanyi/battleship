@@ -28,7 +28,6 @@ public class TorpedoServer implements Runnable {
 			e.printStackTrace();
 		}
 		System.out.println("Listening on " + port);
-
 	}
 
 	@Override

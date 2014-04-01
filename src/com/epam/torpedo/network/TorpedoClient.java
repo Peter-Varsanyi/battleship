@@ -81,12 +81,13 @@ public class TorpedoClient implements Runnable {
 			readBoardParametersAndInit();
 
 			System.out.println("Client ready to serve");
-			
+
 			boolean firstRound = true;
-			
+
 			while (!isStopped) {
-				if (firstRound) attackEnemy();
-				
+				if (firstRound)
+					attackEnemy();
+
 				Command command = null;
 				String line = in.readLine();
 				if (!ai.isGameOver()) {
@@ -98,25 +99,25 @@ public class TorpedoClient implements Runnable {
 					returnResponse(command);
 					attackEnemy();
 				}
-//				Thread.sleep(500);
+				// Thread.sleep(500);
 
-//				Command command;
-//
-//				if (canAttack) {
-//					command = ai.getAttackingCommand();
-//					canAttack = false;
-//				} else {
-//					String line = in.readLine();
-//					if (!ai.isGameOver()) {
-//						command = ai.handleCommand(line);
-//					} else {
-//						command = new GameoverCommand();
-//					}
-//					canAttack = true;
-//				}
-//				if (command instanceof GameoverCommand) isStopped = true;
-//				if (command != null)
-//					returnResponse(command);
+				// Command command;
+				//
+				// if (canAttack) {
+				// command = ai.getAttackingCommand();
+				// canAttack = false;
+				// } else {
+				// String line = in.readLine();
+				// if (!ai.isGameOver()) {
+				// command = ai.handleCommand(line);
+				// } else {
+				// command = new GameoverCommand();
+				// }
+				// canAttack = true;
+				// }
+				// if (command instanceof GameoverCommand) isStopped = true;
+				// if (command != null)
+				// returnResponse(command);
 
 				// System.out.println("Command received: " + line);
 			}
@@ -149,8 +150,9 @@ public class TorpedoClient implements Runnable {
 		int tableY = Integer.parseInt(data[2]);
 
 		board = new Board(tableX, tableY);
-		ai = new ArtificalIntelligence(board,"client");
+		ai = new ArtificalIntelligence(board, "client");
 	}
+
 	private void attackEnemy() throws IOException {
 		Command command = ai.getAttackingCommand();
 		returnResponse(command);
