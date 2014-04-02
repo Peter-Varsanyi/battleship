@@ -34,7 +34,8 @@ public class Board {
 
 	private void addBatchShip(ShipDetail sd) {
 		for (int i = 0; i < sd.getCount(); i++) {
-			addShip(sd);
+			Ship ship = createShipFromDetail(sd);
+			addShip(ship);
 		}
 	}
 
@@ -78,7 +79,8 @@ public class Board {
 	private boolean isShipPlaceable(List<Point> coordinates) {
 		boolean validPosition = true;
 		for (Point p : coordinates) {
-			if (p.getX()>= maxX || p.getY() >= maxY) return false;
+			if (p.getX() >= maxX || p.getY() >= maxY)
+				return false;
 			if (board[p.getX()][p.getY()] > 0) {
 				validPosition = false;
 			}
@@ -86,12 +88,12 @@ public class Board {
 		return validPosition;
 	}
 
-	private void addShip(ShipDetail shipDetail) {
-		Ship ship = createShipOnRandomPoint(shipDetail);
+	private void addShip(Ship ship) {
 		ships.put(nextShipId, ship);
 		putShipInTheMatrix(ship);
-		//printBoard();
-
+	}
+	private Ship createShipFromDetail(ShipDetail shipDetail) {
+		return createShipOnRandomPoint(shipDetail);
 	}
 
 	private void putShipInTheMatrix(Ship ship) {
@@ -117,23 +119,19 @@ public class Board {
 		System.out.println();
 	}
 
-	private boolean isSink(Ship ship) {
-		return ship.getCoordinates().size() > ship.getDamage() ? false : true;
+	private boolean isSunk(Ship ship) {
+		return ship.isSunk();
 	}
 
 	public HitEnum isHit(java.awt.Point point) {
 		if (board[point.x][point.y] > 0) {
 			int shipId = board[point.x][point.y];
 			Ship ship = ships.get(shipId);
-
 			ship.damage++;
 			board[point.x][point.y] = -1;
-
-			if (isSink(ship)) {
-				System.out.println(ship.id + " sink");
+			if (isSunk(ship)) {
 				return HitEnum.SUNK;
 			} else {
-				System.out.println(ship.id + " hit");
 				return HitEnum.HIT;
 			}
 		}

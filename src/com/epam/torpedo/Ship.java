@@ -12,7 +12,6 @@ public class Ship {
 	public Ship(List<Point> coordinates, int id) {
 		this.coordinates = coordinates;
 		this.id = id;
-
 	}
 
 	public List<Point> getCoordinates() {
@@ -21,6 +20,10 @@ public class Ship {
 
 	public int getId() {
 		return id;
+	}
+
+	public boolean isSunk() {
+		return coordinates.size() > damage;
 	}
 
 	public int getDamage() {

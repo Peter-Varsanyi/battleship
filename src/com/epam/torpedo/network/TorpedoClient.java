@@ -9,7 +9,6 @@ import java.net.Socket;
 import com.epam.torpedo.ArtificalIntelligence;
 import com.epam.torpedo.Board;
 import com.epam.torpedo.commands.Command;
-import com.epam.torpedo.commands.GameoverCommand;
 
 public class TorpedoClient implements Runnable {
 	private int port;
@@ -26,33 +25,6 @@ public class TorpedoClient implements Runnable {
 		this.port = port;
 	}
 
-	// private void commandReceived(String line) {
-	// if (line.startsWith("INIT")) {
-	// System.out.println("Init parameters received");
-	// } else if (line.startsWith("FIRE")) {
-	// System.out.println("SHOTS FIRED");
-	// } else if (line.startsWith("MISS")) {
-	// System.out.println("MISS");
-	// } else if (line.startsWith("HIT")) {
-	// System.out.println("hit");
-	// } else if (line.startsWith("SUNK")) {
-	// System.out.println("sunk");
-	// } else if (line.startsWith("LOST")) {
-	// System.out.println("IWIN");
-	// }
-	//
-	// }
-
-	// public void executeCommand(String command) {
-	// try {
-	// out.write(command.getBytes());
-	// out.flush();
-	// } catch (IOException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-
 	boolean isStopped = false;
 
 	public void initStreams() throws IOException {
@@ -66,11 +38,6 @@ public class TorpedoClient implements Runnable {
 		System.out.println("[client] wrote: " + result);
 		out.write((result + "\n").getBytes());
 		out.flush();
-		if (data instanceof GameoverCommand) {
-			in.close();
-			out.close();
-			isStopped = true;
-		}
 	}
 
 	@Override
@@ -80,14 +47,9 @@ public class TorpedoClient implements Runnable {
 			initStreams();
 			readBoardParametersAndInit();
 
-			System.out.println("Client ready to serve");
-
-			boolean firstRound = true;
-
+			attackEnemy();
+			
 			while (!isStopped) {
-				if (firstRound)
-					attackEnemy();
-
 				Command command = null;
 				String line = in.readLine();
 				if (!ai.isGameOver()) {
@@ -99,45 +61,13 @@ public class TorpedoClient implements Runnable {
 					returnResponse(command);
 					attackEnemy();
 				}
-				// Thread.sleep(500);
-
-				// Command command;
-				//
-				// if (canAttack) {
-				// command = ai.getAttackingCommand();
-				// canAttack = false;
-				// } else {
-				// String line = in.readLine();
-				// if (!ai.isGameOver()) {
-				// command = ai.handleCommand(line);
-				// } else {
-				// command = new GameoverCommand();
-				// }
-				// canAttack = true;
-				// }
-				// if (command instanceof GameoverCommand) isStopped = true;
-				// if (command != null)
-				// returnResponse(command);
-
-				// System.out.println("Command received: " + line);
 			}
-
-			// while (!isStopped) {
-			// System.out.println("Connecting on port: " + port);
-			//
-			// executeCommand("FIRE 1,1\n");
-			// String line = in.readLine();
-			// System.out.println("Read from the server: " + line);
-			// }
-			// while(true) {
-			// if (in.ready()) {
-			// String line = in.readLine();
-			// commandReceived(line);
-			// }
-			// }
+			
+			in.close();
+			out.close();
+			isStopped = true;
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

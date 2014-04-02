@@ -2,7 +2,6 @@ package com.epam.torpedo;
 
 import java.awt.Point;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Random;
 
 import com.epam.torpedo.commands.AttackCommand;
@@ -18,7 +17,6 @@ public class ArtificalIntelligence {
 
 	String type;
 	int[][] alreadyUsedPoints;
-	private Point lastHit;
 
 	private int[][] matrix;
 
@@ -47,9 +45,6 @@ public class ArtificalIntelligence {
 			cmd = handleFire(command);
 		} else if (command.startsWith("LOST")) {
 			cmd = new GameoverCommand();
-		} else if (command.startsWith("HIT")) {
-			// System.out.println("a");
-			// cmd = new
 		}
 		return cmd;
 	}
@@ -66,43 +61,44 @@ public class ArtificalIntelligence {
 	public boolean isGameOver() {
 		return board.isGameOver();
 	}
+//
+//	private Point getBestHitBasedOnMatrix(Point lastHit) {
+//		if (lastHit == null)
+//			return new Point(0, 0);
+//		int topleftx = lastHit.x - 1;
+//		int toplefty = lastHit.y - 1;
+//
+//		int maxValue = 0;
+//		int bestX = 0;
+//		int bestY = 0;
+//
+//		System.out.println(lastHit);
+//
+//		for (int i = 0; i < 3; i++) {
+//			for (int j = 0; j < 3; j++) {
+//				// System.out.println("Coords: " + (lastx - i - 1) + " y: " + (lasty - j - 1));
+//				int x = topleftx + i;
+//				int y = toplefty + i;
+//				// System.out.println("aa " + x + " y" + y);
+//				if (isValidSpotOnTable(x, y) && alreadyUsedPoints[x][y] == 0 && matrix[i][j] > maxValue) {
+//					maxValue = matrix[i][j];
+//					bestX = x;
+//					bestY = y;
+//				}
+//			}
+//		}
+//
+//		return new Point(bestX, bestY);
+//	}
 
-	private Point getBestHitBasedOnMatrix(Point lastHit) {
-		if(lastHit == null) return new Point(0,0);
-		int topleftx = lastHit.x - 1;
-		int toplefty = lastHit.y - 1;
-
-		int maxValue = 0;
-		int bestX = 0;
-		int bestY = 0;
-
-		System.out.println(lastHit);
-
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				// System.out.println("Coords: " + (lastx - i - 1) + " y: " + (lasty - j - 1));
-				int x = topleftx + i;
-				int y = toplefty + i;
-//				System.out.println("aa " + x + " y" + y);
-				if (isValidSpotOnTable(x, y) && alreadyUsedPoints[x][y] == 0 && matrix[i][j] > maxValue) {
-					maxValue = matrix[i][j];
-					bestX = x;
-					bestY = y;
-				}
-			}
-		}
-
-		return new Point(bestX, bestY);
-	}
-
-	/**
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	private boolean isValidSpotOnTable(int x, int y) {
-		return x > 0 && y > 0 && x < this.boardX && y < this.boardY;
-	}
+//	/**
+//	 * @param x
+//	 * @param y
+//	 * @return
+//	 */
+//	private boolean isValidSpotOnTable(int x, int y) {
+//		return x > 0 && y > 0 && x < this.boardX && y < this.boardY;
+//	}
 
 	public Command getAttackingCommand() {
 
@@ -110,24 +106,24 @@ public class ArtificalIntelligence {
 
 		Random rng = new Random();
 
-		Point nextHit = getBestHitBasedOnMatrix(lastHit);
-		if (nextHit.equals(new Point(0, 0))) {
-			do {
-				x = rng.nextInt(boardX);
-				y = rng.nextInt(boardY);
-			} while (alreadyUsedPoints[x][y] != 0);
-			nextHit = new Point(x, y);
-		}
+		// Point nextHit = getBestHitBasedOnMatrix(lastHit);
+		// if (nextHit.equals(new Point(0, 0))) {
+		do {
+			x = rng.nextInt(boardX);
+			y = rng.nextInt(boardY);
+		} while (alreadyUsedPoints[x][y] != 0);
+		// nextHit = new Point(x, y);
+		// }
 
-		alreadyUsedPoints[nextHit.x][nextHit.y] = 1;
-		lastHit = nextHit;
+		alreadyUsedPoints[x][y] = 1;
+		// lastHit = nextHit;
 		printShotTable();
-		return new AttackCommand(nextHit.x, nextHit.y);
+		return new AttackCommand(x, y);
 	}
 
 	private void printShotTable() {
-		for(int i  = 0; i < boardX ; i++) {
-			for(int j = 0; j < boardY; j++) {
+		for (int i = 0; i < boardX; i++) {
+			for (int j = 0; j < boardY; j++) {
 				System.out.print(alreadyUsedPoints[i][j]);
 			}
 			System.out.println();
