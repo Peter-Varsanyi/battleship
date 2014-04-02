@@ -65,9 +65,10 @@ public class Board {
 	private List<Point> createNewShipCoordinatesFromDetail(ShipDetail shipDetail) {
 		List<Point> coordinates = new ArrayList<>();
 
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (shipDetail.getRelativePoints()[i][j] > 0) {
+		int[][] points = shipDetail.getRelativePoints();
+		for (int i = 0; i < points.length; i++) {
+			for (int j = 0; j < points[i].length; j++) {
+				if (points[i][j] > 0) {
 					coordinates.add(new Point(j, i));
 				}
 			}

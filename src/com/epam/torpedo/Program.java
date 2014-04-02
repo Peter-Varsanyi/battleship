@@ -8,7 +8,7 @@ public class Program {
 	public static void main(String[] args) {
 
 		new Thread(new TorpedoServer(6666, 10, 10)).start();
-		for (int i = 0; i < 16050; i++) {
+		for (int i = 0; i < 10; i++) {
 			new Thread(new TorpedoClient("localhost", 6666)).start();
 		}
 

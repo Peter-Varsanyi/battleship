@@ -12,16 +12,16 @@ public class ShipDetail {
 
 	private int[][] createPointsFromLines(String[] lines) {
 		int[][] points = new int[4][4];
-		int j = 0;
+		int lineCount = 0;
 		for (String s : lines) {
 			for (int i = 0; i < s.length(); i++) {
 				if (s.charAt(i) == 'x') {
-					points[i][j] = 1;
+					points[i][lineCount] = 1;
 				} else {
-					points[i][j] = 0;
+					points[i][lineCount] = 0;
 				}
 			}
-			j++;
+			lineCount++;
 		}
 		return points;
 	}
