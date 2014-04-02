@@ -92,6 +92,7 @@ public class Board {
 		ships.put(nextShipId, ship);
 		putShipInTheMatrix(ship);
 	}
+
 	private Ship createShipFromDetail(ShipDetail shipDetail) {
 		return createShipOnRandomPoint(shipDetail);
 	}
@@ -119,21 +120,13 @@ public class Board {
 		System.out.println();
 	}
 
-	private boolean isSunk(Ship ship) {
-		return ship.isSunk();
-	}
-
 	public HitEnum isHit(java.awt.Point point) {
 		if (board[point.x][point.y] > 0) {
 			int shipId = board[point.x][point.y];
 			Ship ship = ships.get(shipId);
 			ship.damage++;
 			board[point.x][point.y] = -1;
-			if (isSunk(ship)) {
-				return HitEnum.SUNK;
-			} else {
-				return HitEnum.HIT;
-			}
+			return ship.isSunk() ? HitEnum.SUNK : HitEnum.HIT;
 		}
 		return HitEnum.MISS;
 	}

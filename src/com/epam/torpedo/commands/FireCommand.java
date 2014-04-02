@@ -13,7 +13,6 @@ public class FireCommand implements Command {
 	public FireCommand(Board board, Point point) {
 		this.board = board;
 		this.point = point;
-
 	}
 
 	@Override

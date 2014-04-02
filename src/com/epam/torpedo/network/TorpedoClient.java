@@ -9,6 +9,7 @@ import java.net.Socket;
 import com.epam.torpedo.ArtificalIntelligence;
 import com.epam.torpedo.Board;
 import com.epam.torpedo.commands.Command;
+import com.epam.torpedo.commands.GameoverCommand;
 
 public class TorpedoClient implements Runnable {
 	private int port;
@@ -56,6 +57,7 @@ public class TorpedoClient implements Runnable {
 					command = ai.handleCommand(line);
 				} else {
 					isStopped = true;
+					returnResponse(new GameoverCommand());
 				}
 				if (command != null) {
 					returnResponse(command);
