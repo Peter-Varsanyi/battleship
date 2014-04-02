@@ -1,5 +1,6 @@
 package com.epam.torpedo;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 
 import com.epam.torpedo.enums.HitEnum;
-import com.epam.torpedo.shipreader.Point;
 import com.epam.torpedo.shipreader.ShipDetail;
 import com.epam.torpedo.shipreader.ShipReader;
 
@@ -18,18 +18,20 @@ public class Board {
 	private int[][] board;
 
 	private Map<Integer, Ship> ships = new HashMap<>();
-	private int nextShipId = 0;
+	private Random rng;
 
 	public Board(Integer maxX, Integer maxY) {
 		this.maxX = maxX;
 		this.maxY = maxY;
 
 		board = new int[maxX][maxY];
+		rng = new Random();
 
 		List<ShipDetail> details = new ShipReader().getAllShips();
 		for (ShipDetail sd : details) {
 			addBatchShip(sd);
 		}
+
 	}
 
 	private void addBatchShip(ShipDetail sd) {
@@ -39,27 +41,42 @@ public class Board {
 		}
 	}
 
-	private Ship createShipOnRandomPoint(ShipDetail shipDetail) {
-		boolean validPoint = false;
-		List<Point> coordinates;
-		coordinates = createNewShipCoordinatesFromDetail(shipDetail);
-		Random randomGenerator = new Random();
-		do {
-
-			int x = randomGenerator.nextInt(maxX);
-			int y = randomGenerator.nextInt(maxY);
-
-			coordinates = createNewShipCoordinatesFromDetail(shipDetail);
-
-			for (Point p : coordinates) {
-				p.setX(p.getX() + x);
-				p.setY(p.getY() + y);
+	private boolean placeablePoints(List<Point> points, int x, int y) {
+		boolean placeable = true;
+		for (Point point : points) {
+			if (x + point.x >= maxX || y + point.y >= maxY || board[x + point.x][y + point.y] != 0) {
+				placeable = false;
 			}
+		}
+		return placeable;
+	}
 
-			validPoint = isShipPlaceable(coordinates);
-		} while (!validPoint);
-		nextShipId++;
-		return new Ship(coordinates, nextShipId);
+	private List<Point> getPossiblePositions(List<Point> points) {
+		List<Point> possiblePositions = new ArrayList<Point>();
+		for (int x = 0; x < maxX; x++) {
+			for (int y = 0; y < maxY; y++) {
+				if (placeablePoints(points, x, y)) {
+					possiblePositions.add(new Point(x, y));
+				}
+			}
+		}
+		return possiblePositions;
+	}
+
+	private Ship createShipOnRandomPoint(ShipDetail shipDetail) {
+		List<Point> coordinates = createNewShipCoordinatesFromDetail(shipDetail);
+		List<Point> possiblePositions = getPossiblePositions(coordinates);
+		int randomPositionIndex = rng.nextInt(possiblePositions.size());
+		Point startPoint = possiblePositions.get(randomPositionIndex);
+		createAbolsuteCoordinates(coordinates, startPoint);
+		return new Ship(coordinates);
+	}
+
+	private void createAbolsuteCoordinates(List<Point> coordinates, Point startPoint) {
+		for (Point p : coordinates) {
+			p.x += startPoint.x;
+			p.y += startPoint.y;
+		}
 	}
 
 	private List<Point> createNewShipCoordinatesFromDetail(ShipDetail shipDetail) {
@@ -77,32 +94,19 @@ public class Board {
 		return coordinates;
 	}
 
-	private boolean isShipPlaceable(List<Point> coordinates) {
-		boolean validPosition = true;
-		for (Point p : coordinates) {
-			if (p.getX() >= maxX || p.getY() >= maxY)
-				return false;
-			if (board[p.getX()][p.getY()] > 0) {
-				validPosition = false;
-			}
-		}
-		return validPosition;
+	private void addShip(Ship ship) {
+		ships.put(ship.id, ship);
+		putShipCoordinatesInTheMatrix(ship.getCoordinates(), ship.id);
 	}
 
-	private void addShip(Ship ship) {
-		ships.put(nextShipId, ship);
-		putShipInTheMatrix(ship);
+	private void putShipCoordinatesInTheMatrix(List<Point> coordinates, int id) {
+		for (Point p : coordinates) {
+			board[p.x][p.y] = id;
+		}
 	}
 
 	private Ship createShipFromDetail(ShipDetail shipDetail) {
 		return createShipOnRandomPoint(shipDetail);
-	}
-
-	private void putShipInTheMatrix(Ship ship) {
-		List<Point> coordinates = ship.getCoordinates();
-		for (Point p : coordinates) {
-			board[p.getX()][p.getY()] = ship.getId();
-		}
 	}
 
 	public void printBoard() {
@@ -121,15 +125,17 @@ public class Board {
 		System.out.println();
 	}
 
-	public HitEnum isHit(java.awt.Point point) {
+	public HitEnum isHit(Point point) {
+		HitEnum hit = HitEnum.MISS;
 		if (board[point.x][point.y] > 0) {
 			int shipId = board[point.x][point.y];
 			Ship ship = ships.get(shipId);
-			ship.damage++;
+			ship.takeDamage();
 			board[point.x][point.y] = -1;
-			return ship.isSunk() ? HitEnum.SUNK : HitEnum.HIT;
+			hit = ship.isSunk() ? HitEnum.SUNK : HitEnum.HIT;
+			printBoard();
 		}
-		return HitEnum.MISS;
+		return hit;
 	}
 
 	public int getMaxx() {
@@ -143,8 +149,9 @@ public class Board {
 	public boolean isGameOver() {
 		for (int i = 0; i < maxX; i++) {
 			for (int j = 0; j < maxY; j++) {
-				if (board[i][j] > 0)
+				if (board[i][j] > 0) {
 					return false;
+				}
 			}
 		}
 		return true;

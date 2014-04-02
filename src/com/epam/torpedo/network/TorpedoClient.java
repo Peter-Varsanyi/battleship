@@ -49,22 +49,26 @@ public class TorpedoClient implements Runnable {
 			readBoardParametersAndInit();
 
 			attackEnemy();
-			
+
 			while (!isStopped) {
 				Command command = null;
 				String line = in.readLine();
-				if (!ai.isGameOver()) {
-					command = ai.handleCommand(line);
-				} else {
-					isStopped = true;
-					returnResponse(new GameoverCommand());
-				}
+
+				command = ai.handleCommand(line);
+
 				if (command != null) {
 					returnResponse(command);
 					attackEnemy();
 				}
+
+				isStopped = ai.isGameOver();
 			}
-			
+			if (ai.didILose()) {
+				returnResponse(new GameoverCommand());
+			}
+
+			// returnResponse(new GameoverCommand());
+			System.out.println(ai.getGuessCount());
 			in.close();
 			out.close();
 			isStopped = true;

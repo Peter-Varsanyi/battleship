@@ -63,18 +63,20 @@ public class TorpedoServerWorker implements Runnable {
 			while (!isStopped) {
 				Command command = null;
 				String line = in.readLine();
-				if (!ai.isGameOver()) {
-					command = ai.handleCommand(line);
-				} else {
-					returnResponse(new GameoverCommand());
-					isStopped = true;
-				}
+
+				command = ai.handleCommand(line);
 
 				if (command != null) {
 					returnResponse(command);
 					attackEnemy();
 				}
+				isStopped = ai.isGameOver();
 			}
+			if (ai.didILose()) {
+				returnResponse(new GameoverCommand());
+			}
+			System.out.println(ai.getGuessCount());
+
 			closeStreams();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -1,17 +1,18 @@
 package com.epam.torpedo;
 
+import java.awt.Point;
 import java.util.List;
-
-import com.epam.torpedo.shipreader.Point;
 
 public class Ship {
 	public List<Point> coordinates;
 	public int id;
 	public int damage;
+	public static int nextShipId = 0;
 
-	public Ship(List<Point> coordinates, int id) {
+	public Ship(List<Point> coordinates) {
 		this.coordinates = coordinates;
-		this.id = id;
+		this.id = nextShipId++;
+		System.out.println("Created ship with id: " + id);
 	}
 
 	public List<Point> getCoordinates() {
@@ -28,6 +29,11 @@ public class Ship {
 
 	public int getDamage() {
 		return damage;
+	}
+
+	public void takeDamage() {
+		damage++;
+
 	}
 
 }

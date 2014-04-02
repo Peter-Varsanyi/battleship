@@ -1,5 +1,6 @@
 package com.epam.torpedo.commands;
 
+import java.awt.Point;
 
 public class AttackCommand implements Command {
 
@@ -7,9 +8,9 @@ public class AttackCommand implements Command {
 	private int x;
 	private int y;
 
-	public AttackCommand(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public AttackCommand(Point point) {
+		this.x = point.x;
+		this.y = point.y;
 	}
 
 	@Override

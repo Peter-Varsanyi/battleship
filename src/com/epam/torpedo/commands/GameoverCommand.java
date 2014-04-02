@@ -1,6 +1,5 @@
 package com.epam.torpedo.commands;
 
-
 public class GameoverCommand implements Command {
 
 	private static final String LOST = "LOST";
